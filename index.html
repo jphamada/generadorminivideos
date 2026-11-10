@@ -8,7 +8,72 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- Pantalla de Login / Autenticación -->
+  <div class="auth-wrapper" id="authWrapper">
+    <div class="login-card">
+      <div class="login-icon-box">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <div>
+        <h2 class="login-title">Acceso al Generador</h2>
+        <p class="login-subtitle">Ingresa tus datos de acceso para comenzar a crear videos</p>
+      </div>
+
+      <div class="login-error-msg" id="loginErrorMsg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="loginErrorText">Usuario o contraseña incorrectos.</span>
+      </div>
+
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginUsername">Usuario</label>
+          <div class="form-input-wrapper">
+            <input type="text" id="loginUsername" class="form-input" placeholder="Nombre de usuario" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Contraseña</label>
+          <div class="form-input-wrapper">
+            <input type="password" id="loginPassword" class="form-input" placeholder="Contraseña de acceso" required autocomplete="current-password">
+            <button type="button" class="toggle-pwd-btn" id="btnTogglePassword" title="Mostrar/ocultar contraseña">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="iconEye">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="btnLoginSubmit">
+          <span id="loginBtnText">Iniciar Sesión</span>
+          <span class="spinner" id="loginSpinner" style="display:none; width:16px; height:16px; border-width:2px;"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenedor Principal de la App (Oculto hasta autenticarse) -->
+  <div class="container" id="appContent" style="display: none;">
+    <!-- Barra superior de sesión -->
+    <div class="user-session-bar">
+      <span class="user-badge" id="userBadge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span id="sessionUsername">Usuario</span>
+      </span>
+      <button type="button" class="btn-logout" id="btnLogout">Cerrar sesión</button>
+    </div>
+
     <!-- Encabezado Principal -->
     <header class="app-header">
       <div class="badge-pill">

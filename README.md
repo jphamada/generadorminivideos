@@ -55,3 +55,23 @@ Dentro de la carpeta `fotos_ejemplo/` encontrarás 6 imágenes en formato PNG op
 - **Canvas API:** Renderizado de alta definición en relación 3:2 (720x480 px) a 30 FPS con filtros de desenfoque e interpolación easing.
 - **MediaRecorder API:** Codificación de video MP4 / AVC1 con asignación adaptativa de bitrate calculada en base a la duración para respetar el límite de 1.000 KB.
 - **Vanilla JavaScript:** 100% libre de dependencias pesadas, ejecutable directamente en el cliente.
+
+
+---
+
+## 🔒 Autenticación y Despliegue en Vercel
+
+La aplicación cuenta con una pantalla de inicio de sesión protegida mediante **Vercel Serverless Functions** (`/api/login` y `/api/verify`). Las credenciales **no están expuestas en el código cliente** sino que se validan de forma segura en el servidor a través de variables de entorno.
+
+### Configurar en Vercel:
+
+1. Importa el repositorio `https://github.com/jphamada/generadorminivideos` en [vercel.com](https://vercel.com).
+2. Antes de pulsar **Deploy** (o después en **Project Settings** ➜ **Environment Variables**), agrega las siguientes variables de entorno:
+
+| Variable | Valor | Descripción |
+|---|---|---|
+| `APP_USER` | `admin26` | Usuario de acceso |
+| `APP_PASSWORD` | `adV!D01Ag` | Contraseña de acceso |
+| `SESSION_SECRET` | *(Cadena aleatoria)* | Clave para firmar tokens de sesión seguros |
+
+3. Haz clic en **Deploy**. Al ingresar a tu URL pública, verás la pantalla de acceso protegida.

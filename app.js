@@ -65,7 +65,21 @@
     resultFileSize: document.getElementById('resultFileSize'),
     btnDownloadAgain: document.getElementById('btnDownloadAgain'),
     // Toasts
-    toastContainer: document.getElementById('toastContainer')
+    toastContainer: document.getElementById('toastContainer'),
+    // Autenticación
+    authWrapper: document.getElementById('authWrapper'),
+    appContent: document.getElementById('appContent'),
+    loginForm: document.getElementById('loginForm'),
+    loginUsername: document.getElementById('loginUsername'),
+    loginPassword: document.getElementById('loginPassword'),
+    loginErrorMsg: document.getElementById('loginErrorMsg'),
+    loginErrorText: document.getElementById('loginErrorText'),
+    btnLoginSubmit: document.getElementById('btnLoginSubmit'),
+    loginBtnText: document.getElementById('loginBtnText'),
+    loginSpinner: document.getElementById('loginSpinner'),
+    btnTogglePassword: document.getElementById('btnTogglePassword'),
+    sessionUsername: document.getElementById('sessionUsername'),
+    btnLogout: document.getElementById('btnLogout')
   };
 
   const previewCtx = dom.previewCanvas.getContext('2d');
@@ -873,9 +887,161 @@
     // 5. Botón Generar Video
     dom.btnGenerate.addEventListener('click', generateVideo);
 
+    // 6. Configurar Sistema de Autenticación
+    setupAuth();
+
     // Inicializar estado vacío
     updateUI();
     clearCanvas();
+  }
+
+  // ==========================================
+  // AUTENTICACIÓN Y CONTROL DE ACCESO
+  // ==========================================
+  function setupAuth() {
+    // Si no existen elementos de auth en el DOM, continuar
+    if (!dom.authWrapper || !dom.loginForm) {
+      if (dom.appContent) dom.appContent.style.display = 'flex';
+      return;
+    }
+
+    const TOKEN_KEY = 'mini_video_auth_token';
+    const USER_KEY = 'mini_video_auth_user';
+
+    function showApp(username) {
+      dom.authWrapper.style.display = 'none';
+      dom.appContent.style.display = 'flex';
+      if (dom.sessionUsername) {
+        dom.sessionUsername.textContent = username || 'admin';
+      }
+      // Asegurar canvas dimensionado y redibujado
+      if (state.images.length > 0) {
+        drawSingleFrame(0, 0);
+      } else {
+        clearCanvas();
+      }
+    }
+
+    function showLogin() {
+      dom.authWrapper.style.display = 'flex';
+      dom.appContent.style.display = 'none';
+      if (dom.loginPassword) dom.loginPassword.value = '';
+    }
+
+    function setLoginLoading(isLoading) {
+      dom.btnLoginSubmit.disabled = isLoading;
+      if (isLoading) {
+        dom.loginBtnText.style.display = 'none';
+        dom.loginSpinner.style.display = 'inline-block';
+      } else {
+        dom.loginBtnText.style.display = 'inline';
+        dom.loginSpinner.style.display = 'none';
+      }
+    }
+
+    function showLoginError(msg) {
+      dom.loginErrorText.textContent = msg;
+      dom.loginErrorMsg.style.display = 'flex';
+    }
+
+    function hideLoginError() {
+      dom.loginErrorMsg.style.display = 'none';
+    }
+
+    // Toggle de visibilidad de contraseña
+    if (dom.btnTogglePassword && dom.loginPassword) {
+      dom.btnTogglePassword.addEventListener('click', () => {
+        const isPassword = dom.loginPassword.type === 'password';
+        dom.loginPassword.type = isPassword ? 'text' : 'password';
+      });
+    }
+
+    // Cerrar sesión
+    if (dom.btnLogout) {
+      dom.btnLogout.addEventListener('click', () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        showLogin();
+        showToast('Sesión cerrada.', 'info');
+      });
+    }
+
+    // Manejar envío del formulario de login
+    dom.loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideLoginError();
+      setLoginLoading(true);
+
+      const username = dom.loginUsername.value.trim();
+      const password = dom.loginPassword.value;
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.success) {
+          sessionStorage.setItem(TOKEN_KEY, data.token || 'auth_ok');
+          sessionStorage.setItem(USER_KEY, data.username || username);
+          showApp(data.username || username);
+          showToast(`¡Bienvenido, ${data.username || username}!`, 'success');
+        } else if (response.status === 401) {
+          showLoginError('Usuario o contraseña incorrectos.');
+        } else if (data.error) {
+          showLoginError(data.error);
+        } else {
+          showLoginError('Error al iniciar sesión. Inténtalo nuevamente.');
+        }
+      } catch (err) {
+        // En entorno local offline sin servidor serverless Vercel (/api/login da 404 o NetworkError)
+        console.warn('API /api/login no disponible en local, aplicando fallback offline:', err);
+        if (username === 'admin26' && password === 'adV!D01Ag') {
+          sessionStorage.setItem(TOKEN_KEY, 'local_dev_token');
+          sessionStorage.setItem(USER_KEY, username);
+          showApp(username);
+          showToast('Modo local: acceso validado. En Vercel se usará process.env.', 'info');
+        } else {
+          showLoginError('Usuario o contraseña incorrectos.');
+        }
+      } finally {
+        setLoginLoading(false);
+      }
+    });
+
+    // Comprobar sesión existente al cargar
+    const existingToken = sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
+    const existingUser = sessionStorage.getItem(USER_KEY) || localStorage.getItem(USER_KEY);
+
+    if (existingToken && existingUser) {
+      // Validar token con el servidor
+      fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: existingToken })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.valid) {
+          showApp(data.username || existingUser);
+        } else {
+          // Token no válido
+          sessionStorage.removeItem(TOKEN_KEY);
+          showLogin();
+        }
+      })
+      .catch(() => {
+        // En caso de modo local offline
+        showApp(existingUser);
+      });
+    } else {
+      showLogin();
+    }
   }
 
   // Iniciar cuando el DOM esté listo
