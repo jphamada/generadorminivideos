@@ -1,0 +1,19 @@
+{
+  "name": "generadorminivideos",
+  "version": "1.0.0",
+  "description": "Aplicación web para convertir galería de fotos en videos animados MP4 con efecto carrusel",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "video",
+    "carousel",
+    "photos-to-video",
+    "mp4",
+    "canvas",
+    "html5"
+  ],
+  "author": "",
+  "license": "MIT"
+}

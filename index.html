@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Mini Videos | Fotos a Video Carrusel 4:3 MP4</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Encabezado Principal -->
+    <header class="app-header">
+      <div class="badge-pill">
+        <span>🎬</span> Mini Video Maker 4:3
+      </div>
+      <h1 class="app-title">Generador de Mini Videos</h1>
+      <p class="app-subtitle">
+        Convierte tu galería de fotos en un video animado tipo carrusel con efecto suave de derecha a izquierda, optimizado y en formato MP4.
+      </p>
+
+      <!-- Ficha de Reglas y Especificaciones -->
+      <div class="specs-bar">
+        <div class="spec-chip" title="Máximo 6 imágenes permitidas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Hasta <strong>6 fotos</strong></span>
+        </div>
+        <div class="spec-chip" title="Cada imagen no debe exceder los 100 KB">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Fotos <strong>&le; 100 KB</strong></span>
+        </div>
+        <div class="spec-chip" title="Proporción de pantalla 4:3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="15" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="18" x2="12" y2="21"></line>
+          </svg>
+          <span>Proporción <strong>4:3</strong></span>
+        </div>
+        <div class="spec-chip" title="El video final no superará los 1.000 KB">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          <span>Video MP4 <strong>&lt; 1.000 KB</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Disposición Principal en 2 Columnas -->
+    <main class="main-grid">
+      <!-- Columna Izquierda: Carga, Gestión y Orden de Fotos -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              <line x1="16" y1="5" x2="22" y2="5"></line>
+              <line x1="19" y1="2" x2="19" y2="8"></line>
+            </svg>
+            Fotos del Video
+          </h2>
+          <span class="counter-badge" id="imageCounterBadge">0 / 6</span>
+        </div>
+
+        <!-- Zona de Arrastre / Carga masiva -->
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/gif">
+          <div class="dropzone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="dropzone-text">
+            <h3>Arrastra todas tus fotos juntas aquí</h3>
+            <p>o haz clic para seleccionar (hasta 6 imágenes, máx. 100 KB c/u)</p>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:-8px;">
+          <button type="button" class="btn-secondary" id="btnLoadSamples" style="font-size:0.78rem; padding:5px 12px;">
+            ✨ Cargar 6 fotos de prueba (&lt;100k)
+          </button>
+        </div>
+
+        <!-- Galería interactiva con orden de aparición -->
+        <div class="gallery-section">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; font-weight:600; color:#cbd5e1;">Orden de aparición en el video:</span>
+            <span style="font-size:0.75rem; color:#94a3b8;">Arrastra o usa las flechas ◀ ▶</span>
+          </div>
+
+          <div class="gallery-grid" id="galleryGrid">
+            <!-- Las tarjetas de fotos se inyectan dinámicamente aquí -->
+          </div>
+        </div>
+
+        <!-- Ajustes opcionales de animación y diseño -->
+        <div class="options-grid">
+          <div class="option-item">
+            <label for="stayDurationSelect">⏱️ Tiempo por foto</label>
+            <select id="stayDurationSelect" class="option-select">
+              <option value="1.5">Rápido (1.5 seg)</option>
+              <option value="2.2" selected>Normal (2.2 seg)</option>
+              <option value="3.0">Lento (3.0 seg)</option>
+            </select>
+          </div>
+          <div class="option-item">
+            <label for="fitModeSelect">🖼️ Ajuste de imagen (4:3)</label>
+            <select id="fitModeSelect" class="option-select">
+              <option value="contain-blur" selected>Fondo desenfocado (Recomendado)</option>
+              <option value="cover">Recortar para rellenar (Cover)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Resumen de estadísticas -->
+        <div class="stats-summary">
+          <div class="stats-item">
+            <span class="stats-label">Fotos</span>
+            <span class="stats-value" id="statImgCount">0 / 6</span>
+          </div>
+          <div class="stats-item">
+            <span class="stats-label">Duración</span>
+            <span class="stats-value" id="statDuration">0.0 s</span>
+          </div>
+          <div class="stats-item">
+            <span class="stats-label">Peso Estimado</span>
+            <span class="stats-value" id="statEstSize" style="color:#38bdf8;">~0 KB (Límite 1.000 KB)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Columna Derecha: Previsualización y Generación de Video -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Vista Previa (Formato 4:3)
+          </h2>
+          <span style="font-size:0.75rem; color:#818cf8; font-weight:600;">Carrusel: Derecha ➜ Izquierda</span>
+        </div>
+
+        <!-- Marco de Canvas 4:3 -->
+        <div class="preview-wrapper">
+          <canvas id="previewCanvas"></canvas>
+          <div class="preview-overlay" id="previewOverlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Carga fotos para ver la previsualización</span>
+          </div>
+        </div>
+
+        <!-- Controles de la Vista Previa -->
+        <div class="preview-controls">
+          <button type="button" class="btn-secondary" id="btnPlayPreview" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Reproducir vista previa
+          </button>
+          <span class="preview-status" id="previewStatus">En pausa</span>
+        </div>
+
+        <!-- Botón Principal: Confirmar y Generar Video -->
+        <button type="button" class="btn-generate" id="btnGenerate" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          Generar Video MP4 y Descargar
+        </button>
+
+        <!-- Sección de Resultado (aparece tras la generación y descarga) -->
+        <div class="success-box" id="resultSection" style="display:none;">
+          <div class="success-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            ¡Video generado y descargado!
+          </div>
+          <div class="success-info">
+            Tu video se descargó automáticamente como <strong>video.mp4</strong>.
+            <div id="resultFileSize" style="margin-top:4px;"></div>
+          </div>
+          <video id="resultVideo" controls playsinline style="width:100%; aspect-ratio:4/3; border-radius:8px; background:#000; margin-top:8px;"></video>
+          <button type="button" class="btn-secondary" id="btnDownloadAgain" style="margin-top:4px; justify-content:center;">
+            ⬇️ Volver a descargar video.mp4
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal de Progreso de Renderizado -->
+  <div class="modal-backdrop" id="exportModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:center;">
+        <span class="spinner" style="width:36px; height:36px; border-width:3px;"></span>
+      </div>
+      <h3 class="modal-title">Generando tu video animado...</h3>
+      <p style="font-size:0.85rem; color:#94a3b8; margin-top:-10px;">
+        Procesando carrusel con pasaje de derecha a izquierda en proporción 4:3
+      </p>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="exportProgress"></div>
+      </div>
+
+      <div class="progress-details">
+        <span id="exportStatusDetail">Iniciando...</span>
+        <span id="exportProgressText" style="font-weight:700; color:#cbd5e1;">0%</span>
+      </div>
+
+      <p style="font-size:0.75rem; color:#64748b;">
+        Optimizando tasa de bits para asegurar que pese menos de 1.000 KB. La descarga iniciará automáticamente al completar.
+      </p>
+    </div>
+  </div>
+
+  <!-- Contenedor para notificaciones Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
