@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Mini Videos | Fotos a Video Carrusel 4:3 MP4</title>
+  <title>Generador de Mini Videos | Fotos a Video Carrusel 3:2 (720x480) MP4</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <!-- Encabezado Principal -->
     <header class="app-header">
       <div class="badge-pill">
-        <span>🎬</span> Mini Video Maker 4:3
+        <span>🎬</span> Mini Video Maker 3:2 (720x480)
       </div>
       <h1 class="app-title">Generador de Mini Videos</h1>
       <p class="app-subtitle">
@@ -37,13 +37,13 @@
           </svg>
           <span>Fotos <strong>&le; 100 KB</strong></span>
         </div>
-        <div class="spec-chip" title="Proporción de pantalla 4:3">
+        <div class="spec-chip" title="Proporción de pantalla 3:2 (720x480)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="3" width="20" height="15" rx="2" ry="2"></rect>
             <line x1="8" y1="21" x2="16" y2="21"></line>
             <line x1="12" y1="18" x2="12" y2="21"></line>
           </svg>
-          <span>Proporción <strong>4:3</strong></span>
+          <span>Proporción <strong>3:2 (720x480)</strong></span>
         </div>
         <div class="spec-chip" title="El video final no superará los 1.000 KB">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -116,7 +116,7 @@
             </select>
           </div>
           <div class="option-item">
-            <label for="fitModeSelect">🖼️ Ajuste de imagen (4:3)</label>
+            <label for="fitModeSelect">🖼️ Ajuste de imagen (3:2)</label>
             <select id="fitModeSelect" class="option-select">
               <option value="contain-blur" selected>Fondo desenfocado (Recomendado)</option>
               <option value="cover">Recortar para rellenar (Cover)</option>
@@ -148,12 +148,12 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
-            Vista Previa (Formato 4:3)
+            Vista Previa (Formato 3:2 - 720x480)
           </h2>
           <span style="font-size:0.75rem; color:#818cf8; font-weight:600;">Carrusel: Derecha ➜ Izquierda</span>
         </div>
 
-        <!-- Marco de Canvas 4:3 -->
+        <!-- Marco de Canvas 3:2 -->
         <div class="preview-wrapper">
           <canvas id="previewCanvas"></canvas>
           <div class="preview-overlay" id="previewOverlay">
@@ -194,10 +194,10 @@
             ¡Video generado y descargado!
           </div>
           <div class="success-info">
-            Tu video se descargó automáticamente como <strong>video.mp4</strong>.
+            Tu video se descargó automáticamente como <strong>video.mp4</strong> (720x480).
             <div id="resultFileSize" style="margin-top:4px;"></div>
           </div>
-          <video id="resultVideo" controls playsinline style="width:100%; aspect-ratio:4/3; border-radius:8px; background:#000; margin-top:8px;"></video>
+          <video id="resultVideo" controls playsinline style="width:100%; aspect-ratio:3/2; border-radius:8px; background:#000; margin-top:8px;"></video>
           <button type="button" class="btn-secondary" id="btnDownloadAgain" style="margin-top:4px; justify-content:center;">
             ⬇️ Volver a descargar video.mp4
           </button>
@@ -214,7 +214,7 @@
       </div>
       <h3 class="modal-title">Generando tu video animado...</h3>
       <p style="font-size:0.85rem; color:#94a3b8; margin-top:-10px;">
-        Procesando carrusel con pasaje de derecha a izquierda en proporción 4:3
+        Procesando carrusel con pasaje de derecha a izquierda en proporción 3:2 (720x480)
       </p>
 
       <div class="progress-container">

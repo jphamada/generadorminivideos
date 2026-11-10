@@ -1,6 +1,6 @@
 # Generador de Mini Videos 🎬
 
-Una aplicación web moderna, rápida y ligera para transformar una galería de fotos en un video animado tipo carrusel con efecto de transición de **derecha a izquierda**, proporción **4:3** y exportación automática en **MP4**.
+Una aplicación web moderna, rápida y ligera para transformar una galería de fotos en un video animado tipo carrusel con efecto de transición de **derecha a izquierda**, proporción **3:2 (720x480)** y exportación automática en **MP4**.
 
 ---
 
@@ -10,7 +10,7 @@ Una aplicación web moderna, rápida y ligera para transformar una galería de f
 2. **Límite de peso por imagen:** Las imágenes no pueden superar los **100 KB** (100k). El sistema valida cada archivo y rechaza automáticamente aquellos que excedan este límite con un mensaje explicativo.
 3. **Efecto de carrusel:** Las fotos pasan de **derecha a izquierda** con una transición fluida (curva de aceleración cúbica suave).
 4. **Límite de peso del video generado:** El video final está optimizado con control dinámico de tasa de bits para no superar nunca los **1.000 KB** (1 MB).
-5. **Proporción 4:3:** El lienzo y video generado tienen una proporción exacta de 4:3 (800 x 600 px), con fondo desenfocado inteligente (*blurred backdrop*) para que las fotos nunca se deformen.
+5. **Proporción 3:2 (720x480):** El lienzo y video generado tienen una proporción de 3:2 (resolución de 720 x 480 px), con fondo desenfocado inteligente (*blurred backdrop*) para que las fotos nunca se deformen.
 6. **Carga masiva:** El usuario puede seleccionar o arrastrar todas las fotos juntas de una sola vez.
 7. **Control y reordenamiento del orden:** Antes de generar el video, la app muestra una galería interactiva con el orden numérico (#1, #2, #3...). El usuario puede reordenar las imágenes mediante **arrastrar y soltar (Drag & Drop)** o con los botones **◀ / ▶**.
 8. **Edición flexible:** Es posible **eliminar** cualquier foto individualmente y **sumar nuevas fotos** en cualquier momento hasta completar el cupo de 6.
@@ -52,6 +52,6 @@ Dentro de la carpeta `fotos_ejemplo/` encontrarás 6 imágenes en formato PNG op
 ## 🛠️ Tecnologías Utilizadas
 
 - **HTML5 & CSS3 Moderno:** Diseño responsivo con estética glassmorphism, modo oscuro y animaciones sutiles.
-- **Canvas API:** Renderizado de alta definición en relación 4:3 a 30 FPS con filtros de desenfoque e interpolación easing.
+- **Canvas API:** Renderizado de alta definición en relación 3:2 (720x480 px) a 30 FPS con filtros de desenfoque e interpolación easing.
 - **MediaRecorder API:** Codificación de video MP4 / AVC1 con asignación adaptativa de bitrate calculada en base a la duración para respetar el límite de 1.000 KB.
 - **Vanilla JavaScript:** 100% libre de dependencias pesadas, ejecutable directamente en el cliente.

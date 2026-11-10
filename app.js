@@ -1,6 +1,6 @@
 /**
  * Generador de Mini Videos - Lógica de Aplicación
- * Convierte una galería de hasta 6 fotos (<100 KB c/u) en un video MP4 animado (<1.000 KB, 4:3).
+ * Convierte una galería de hasta 6 fotos (<100 KB c/u) en un video MP4 animado (<1.000 KB, 3:2 - 720x480).
  */
 
 (() => {
@@ -13,8 +13,8 @@
     MAX_IMAGES: 6,
     MAX_IMAGE_SIZE_BYTES: 100 * 1024,      // 100 KB (102,400 bytes)
     MAX_VIDEO_SIZE_BYTES: 1000 * 1024,     // 1.000 KB (1,024,000 bytes)
-    CANVAS_WIDTH: 800,                     // Relación 4:3 (800x600)
-    CANVAS_HEIGHT: 600,
+    CANVAS_WIDTH: 720,                     // Relación 3:2 (720x480)
+    CANVAS_HEIGHT: 480,
     FPS: 30,
     DEFAULT_STAY_DURATION: 2.2,            // Segundos fija cada imagen
     DEFAULT_SLIDE_DURATION: 0.8,           // Segundos de transición de derecha a izquierda
@@ -378,7 +378,7 @@
     ctx.clip();
 
     if (state.fitMode === 'cover') {
-      // Modo Cover: llena el marco 4:3 recortando proporcionalmente
+      // Modo Cover: llena el marco 3:2 recortando proporcionalmente
       const imgRatio = img.naturalWidth / img.naturalHeight;
       const canvasRatio = W / H;
       let drawW, drawH, drawX, drawY;

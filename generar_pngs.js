@@ -92,7 +92,7 @@ const samples = [
 ];
 
 samples.forEach((s, idx) => {
-  const buf = createPNG(800, 600, s.r, s.g, s.b, idx);
+  const buf = createPNG(720, 480, s.r, s.g, s.b, idx);
   const filePath = path.join(outDir, s.name);
   fs.writeFileSync(filePath, buf);
   const sizeKB = (buf.length / 1024).toFixed(1);

@@ -306,7 +306,7 @@ body {
 
 .img-card-preview {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
   background: #020617;
   display: block;
@@ -375,7 +375,7 @@ body {
 
 /* Add more button tile */
 .add-tile-btn {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-md);
   background: transparent;
@@ -399,7 +399,7 @@ body {
 .preview-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #020617;
