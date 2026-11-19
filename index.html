@@ -115,7 +115,14 @@
             <polygon points="23 7 16 12 23 17 23 7"></polygon>
             <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
           </svg>
-          <span>Video MP4 <strong>&lt; 1.000 KB</strong></span>
+          <span>Video MP4 <strong>&lt; 1 MB</strong></span>
+        </div>
+        <div class="spec-chip" title="Duración: 1 segundo por foto, máximo 6 segundos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Duración <strong>1s/foto (máx. 6s)</strong></span>
         </div>
       </div>
     </header>
@@ -170,16 +177,8 @@
           </div>
         </div>
 
-        <!-- Ajustes opcionales de animación y diseño -->
-        <div class="options-grid">
-          <div class="option-item">
-            <label for="stayDurationSelect">⏱️ Tiempo por foto</label>
-            <select id="stayDurationSelect" class="option-select">
-              <option value="1.5" selected>Rápido (1.5 seg)</option>
-              <option value="2.2">Normal (2.2 seg)</option>
-              <option value="3.0">Lento (3.0 seg)</option>
-            </select>
-          </div>
+        <!-- Ajuste de diseño -->
+        <div class="options-grid" style="grid-template-columns: 1fr;">
           <div class="option-item">
             <label for="fitModeSelect">🖼️ Ajuste de imagen (3:2)</label>
             <select id="fitModeSelect" class="option-select">

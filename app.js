@@ -13,11 +13,12 @@
     MAX_IMAGES: 6,
     MAX_IMAGE_SIZE_BYTES: 1024 * 1024,      // 1 MB (1,048,576 bytes)
     MAX_VIDEO_SIZE_BYTES: 1000 * 1024,     // 1.000 KB (1,024,000 bytes)
+    MAX_VIDEO_DURATION: 6.0,               // Duración máxima del video exportado: 6 segundos
     CANVAS_WIDTH: 720,                     // Relación 3:2 (720x480)
     CANVAS_HEIGHT: 480,
     FPS: 30,
-    DEFAULT_STAY_DURATION: 1.5,            // Segundos fija cada imagen (por defecto 1.5s)
-    DEFAULT_SLIDE_DURATION: 0.8,           // Segundos de transición de derecha a izquierda
+    DEFAULT_STAY_DURATION: 0.75,           // 0.75s fija
+    DEFAULT_SLIDE_DURATION: 0.25,          // 0.25s slide -> Total: 1.0s exacto por foto
     DOWNLOAD_FILENAME: 'video.mp4'         // Nombre solicitado: "video" y mp4
   };
 
@@ -49,7 +50,6 @@
     btnPlayPreview: document.getElementById('btnPlayPreview'),
     previewStatus: document.getElementById('previewStatus'),
     btnGenerate: document.getElementById('btnGenerate'),
-    stayDurationSelect: document.getElementById('stayDurationSelect'),
     fitModeSelect: document.getElementById('fitModeSelect'),
     statDuration: document.getElementById('statDuration'),
     statEstSize: document.getElementById('statEstSize'),
@@ -360,22 +360,13 @@
       return;
     }
 
-    // Cálculo de duración:
-    // Si hay N fotos:
-    // Para N = 1: 3.0s
-    // Para N > 1: (N - 1) * (stay + slide) + stay + 0.5s cierre
-    let totalSec = 0;
-    if (count === 1) {
-      totalSec = 3.0;
-    } else {
-      totalSec = (count - 1) * (state.stayDuration + state.slideDuration) + state.stayDuration + 0.5;
-    }
+    // Cada foto dura 1.0s, máximo 6.0s en total
+    const totalSec = getTotalDuration();
+    dom.statDuration.textContent = `${totalSec.toFixed(1)} s (máx. 6.0s)`;
 
-    dom.statDuration.textContent = `${totalSec.toFixed(1)} s`;
-
-    // Bitrate estimado fijado para garantizar < 1.000 KB (apuntando a ~550 KB)
-    const targetKBytes = Math.min(750, Math.floor(totalSec * 50));
-    dom.statEstSize.textContent = `~${targetKBytes} KB (Límite 1.000 KB)`;
+    // Bitrate estimado para garantizar < 1 MB
+    const targetKBytes = Math.min(650, Math.floor(totalSec * 80));
+    dom.statEstSize.textContent = `~${targetKBytes} KB (Límite 1 MB)`;
   }
 
   // ==========================================
@@ -503,10 +494,10 @@
       clearCanvas(ctx);
       drawImageOnCanvas(ctx, state.images[count - 1].img, 0);
 
-      // Cierre sutil en el último medio segundo
+      // Cierre sutil en los últimos 0.15 segundos
       if (timeInLast > stay) {
-        const fadeProgress = Math.min(1, (timeInLast - stay) / 0.5);
-        ctx.fillStyle = `rgba(2, 6, 23, ${fadeProgress * 0.8})`;
+        const fadeProgress = Math.min(1, (timeInLast - stay) / 0.25);
+        ctx.fillStyle = `rgba(2, 6, 23, ${fadeProgress * 0.7})`;
         ctx.fillRect(0, 0, W, CONFIG.CANVAS_HEIGHT);
       }
       return;
@@ -542,8 +533,9 @@
   function getTotalDuration() {
     const count = state.images.length;
     if (count === 0) return 0;
-    if (count === 1) return 3.0;
-    return (count - 1) * (state.stayDuration + state.slideDuration) + state.stayDuration + 0.5;
+    // Cada foto dura exactamente 1.0 segundo.
+    // Límite estricto garantizado: no superar los 6.0 segundos
+    return Math.min(CONFIG.MAX_VIDEO_DURATION, count * 1.0);
   }
 
   function startPreview() {
@@ -910,15 +902,7 @@
     // 3. Controles de vista previa
     dom.btnPlayPreview.addEventListener('click', togglePreview);
 
-    // 4. Cambios en opciones
-    dom.stayDurationSelect.addEventListener('change', (e) => {
-      state.stayDuration = parseFloat(e.target.value);
-      updateEstimations();
-      if (!state.isPlayingPreview && state.images.length > 0) {
-        drawSingleFrame(0, 0);
-      }
-    });
-
+    // 4. Cambios en opciones de ajuste
     dom.fitModeSelect.addEventListener('change', (e) => {
       state.fitMode = e.target.value;
       if (!state.isPlayingPreview && state.images.length > 0) {

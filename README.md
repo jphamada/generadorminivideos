@@ -11,9 +11,7 @@ Una aplicación web moderna, rápida y ligera para transformar una galería de f
 3. **Efecto de carrusel:** Las fotos pasan de **derecha a izquierda** con una transición fluida (curva de aceleración cúbica suave).
 4. **Límite de peso del video generado:** El video final está optimizado con control dinámico de tasa de bits para no superar nunca los **1.000 KB** (1 MB).
 5. **Proporción 3:2 (720x480):** El lienzo y video generado tienen una proporción de 3:2 (resolución de 720 x 480 px), con ajuste predeterminado de **Recortar para rellenar (Cover)** o fondo desenfocado inteligente.
-6. **Ajustes de salida por defecto:**
-   - **Tiempo por foto:** 1.5 segundos por defecto.
-   - **Ajuste de imagen:** Recortar para rellenar (Cover) por defecto.
+6. **Duración estricta:** Cada foto dura **1 segundo** (0.75s estática + 0.25s slide) y la duración total del video generado **no supera los 6 segundos** (máximo 6 fotos).
 7. **Carga masiva:** El usuario puede seleccionar o arrastrar todas las fotos juntas de una sola vez.
 8. **Control y reordenamiento del orden:** Antes de generar el video, la app muestra una galería interactiva con el orden numérico (#1, #2, #3...). El usuario puede reordenar las imágenes mediante **arrastrar y soltar (Drag & Drop)** o con los botones **◀ / ▶**.
 9. **Edición flexible:** Es posible **eliminar** cualquier foto individualmente y **sumar nuevas fotos** en cualquier momento hasta completar el cupo de 6.
