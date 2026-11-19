@@ -94,13 +94,13 @@
           </svg>
           <span>Hasta <strong>6 fotos</strong></span>
         </div>
-        <div class="spec-chip" title="Cada imagen no debe exceder los 100 KB">
+        <div class="spec-chip" title="Cada imagen no debe exceder 1 MB">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          <span>Fotos <strong>&le; 100 KB</strong></span>
+          <span>Fotos <strong>&le; 1 MB</strong></span>
         </div>
         <div class="spec-chip" title="Proporción de pantalla 3:2 (720x480)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -148,13 +148,13 @@
           </div>
           <div class="dropzone-text">
             <h3>Arrastra todas tus fotos juntas aquí</h3>
-            <p>o haz clic para seleccionar (hasta 6 imágenes, máx. 100 KB c/u)</p>
+            <p>o haz clic para seleccionar (hasta 6 imágenes, máx. 1 MB c/u)</p>
           </div>
         </div>
 
         <div style="display:flex; justify-content:center; margin-top:-8px;">
           <button type="button" class="btn-secondary" id="btnLoadSamples" style="font-size:0.78rem; padding:5px 12px;">
-            ✨ Cargar 6 fotos de prueba (&lt;100k)
+            ✨ Cargar 6 fotos de prueba (&lt;1 MB)
           </button>
         </div>
 
@@ -175,16 +175,16 @@
           <div class="option-item">
             <label for="stayDurationSelect">⏱️ Tiempo por foto</label>
             <select id="stayDurationSelect" class="option-select">
-              <option value="1.5">Rápido (1.5 seg)</option>
-              <option value="2.2" selected>Normal (2.2 seg)</option>
+              <option value="1.5" selected>Rápido (1.5 seg)</option>
+              <option value="2.2">Normal (2.2 seg)</option>
               <option value="3.0">Lento (3.0 seg)</option>
             </select>
           </div>
           <div class="option-item">
             <label for="fitModeSelect">🖼️ Ajuste de imagen (3:2)</label>
             <select id="fitModeSelect" class="option-select">
-              <option value="contain-blur" selected>Fondo desenfocado (Recomendado)</option>
-              <option value="cover">Recortar para rellenar (Cover)</option>
+              <option value="cover" selected>Recortar para rellenar (Cover)</option>
+              <option value="contain-blur">Fondo desenfocado</option>
             </select>
           </div>
         </div>

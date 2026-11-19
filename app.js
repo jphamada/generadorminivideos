@@ -1,6 +1,6 @@
 /**
  * Generador de Mini Videos - Lógica de Aplicación
- * Convierte una galería de hasta 6 fotos (<100 KB c/u) en un video MP4 animado (<1.000 KB, 3:2 - 720x480).
+ * Convierte una galería de hasta 6 fotos (hasta 1 MB c/u) en un video MP4 animado (<1.000 KB, 3:2 - 720x480).
  */
 
 (() => {
@@ -11,12 +11,12 @@
   // ==========================================
   const CONFIG = {
     MAX_IMAGES: 6,
-    MAX_IMAGE_SIZE_BYTES: 100 * 1024,      // 100 KB (102,400 bytes)
+    MAX_IMAGE_SIZE_BYTES: 1024 * 1024,      // 1 MB (1,048,576 bytes)
     MAX_VIDEO_SIZE_BYTES: 1000 * 1024,     // 1.000 KB (1,024,000 bytes)
     CANVAS_WIDTH: 720,                     // Relación 3:2 (720x480)
     CANVAS_HEIGHT: 480,
     FPS: 30,
-    DEFAULT_STAY_DURATION: 2.2,            // Segundos fija cada imagen
+    DEFAULT_STAY_DURATION: 1.5,            // Segundos fija cada imagen (por defecto 1.5s)
     DEFAULT_SLIDE_DURATION: 0.8,           // Segundos de transición de derecha a izquierda
     DOWNLOAD_FILENAME: 'video.mp4'         // Nombre solicitado: "video" y mp4
   };
@@ -30,7 +30,7 @@
     previewAnimId: null,
     previewStartTime: 0,
     isExporting: false,
-    fitMode: 'contain-blur', // 'contain-blur' o 'cover'
+    fitMode: 'cover', // 'cover' (por defecto: recortar para rellenar) o 'contain-blur'
     stayDuration: CONFIG.DEFAULT_STAY_DURATION,
     slideDuration: CONFIG.DEFAULT_SLIDE_DURATION
   };
@@ -144,9 +144,9 @@
         continue;
       }
 
-      // Validar tamaño: no debe superar los 100k
+      // Validar tamaño: no debe superar 1 mega (1 MB)
       if (file.size > CONFIG.MAX_IMAGE_SIZE_BYTES) {
-        errors.push(`"${file.name}" pesa ${formatBytes(file.size)}, supera el límite de 100 KB.`);
+        errors.push(`"${file.name}" pesa ${formatBytes(file.size)}, supera el límite de 1 MB.`);
         rejectedCount++;
         continue;
       }
@@ -205,6 +205,17 @@
     showToast('Foto eliminada.', 'info');
   }
 
+  /**
+   * Borra todas las imágenes cargadas, reseteando la galería y el canvas.
+   */
+  function clearUploadedImages() {
+    state.images = [];
+    if (dom.fileInput) dom.fileInput.value = '';
+    stopPreview();
+    updateUI();
+    clearCanvas();
+  }
+
   function moveImage(fromIndex, toIndex) {
     if (toIndex < 0 || toIndex >= state.images.length) return;
     const item = state.images.splice(fromIndex, 1)[0];
@@ -234,7 +245,7 @@
             <polyline points="21 15 16 10 5 21"/>
           </svg>
           <p>No hay fotos cargadas aún.</p>
-          <span style="font-size:0.78rem;color:#64748b;">Carga hasta 6 imágenes (máx 100 KB c/u)</span>
+          <span style="font-size:0.78rem;color:#64748b;">Carga hasta 6 imágenes (máx 1 MB c/u)</span>
         </div>
       `;
       dom.previewOverlay.classList.remove('hidden');
@@ -670,6 +681,9 @@
 
       // Mostrar reproductor con el resultado
       showResultSection(finalBlob, finalSizeKB, isUnderLimit);
+
+      // Borrar todos los archivos subidos al exportar el video
+      clearUploadedImages();
 
       showToast(`¡Video MP4 generado con éxito! (${finalSizeKB} KB / < 1.000 KB)`, 'success');
     } catch (err) {
