@@ -645,33 +645,39 @@
     dom.exportModal.classList.add('show');
     dom.exportProgress.style.width = '0%';
     dom.exportProgressText.textContent = '0%';
-    dom.exportStatusDetail.textContent = 'Preparando fotogramas...';
+    dom.exportStatusDetail.textContent = 'Preparando fotogramas en 720x480...';
 
     const totalDuration = getTotalDuration();
-    const fps = CONFIG.FPS;
-    const totalFrames = Math.ceil(totalDuration * fps);
+    let currentFps = CONFIG.FPS;
+    let totalFrames = Math.ceil(totalDuration * currentFps);
 
-    // Calcular bitrate óptimo para cumplir estrictamente < 1.000 KB
-    // Objetivo seguro: 650 KB (deja 350 KB de margen contra el límite de 1.000 KB)
-    const targetKiloBytes = 650;
+    // Objetivo seguro: ~550 KB (deja un amplio margen del ~45% contra el límite de 1.000 KB / 1 MB)
+    const targetKiloBytes = 550;
     let targetBitrate = Math.floor((targetKiloBytes * 1024 * 8) / totalDuration);
-    // Limitar bitrate entre 300 kbps y 1200 kbps
-    targetBitrate = Math.max(300000, Math.min(1200000, targetBitrate));
+    // Limitar bitrate para garantizar nitidez en 720x480 sin exceder el peso
+    targetBitrate = Math.max(250000, Math.min(950000, targetBitrate));
 
     try {
-      let finalBlob = await recordCanvasAnimation(targetBitrate, totalDuration, totalFrames);
+      let finalBlob = await recordCanvasAnimation(targetBitrate, totalDuration, totalFrames, currentFps);
 
-      // Verificación estricta: si por alguna anomalía del codec supera los 1.000 KB (1,024,000 bytes):
-      if (finalBlob.size > CONFIG.MAX_VIDEO_SIZE_BYTES) {
-        dom.exportStatusDetail.textContent = 'Ajustando compresión para asegurar < 1.000 KB...';
-        // Reducir bitrate a la mitad y volver a renderizar
-        const safeBitrate = Math.floor(targetBitrate * 0.6);
-        finalBlob = await recordCanvasAnimation(safeBitrate, totalDuration, totalFrames);
+      // Verificación y garantía estricta: asegurar que pese MENOS de 1 MB (< 1.000 KB = 1.024.000 bytes)
+      const MAX_BYTES = CONFIG.MAX_VIDEO_SIZE_BYTES;
+      let attempt = 0;
+
+      while (finalBlob.size > MAX_BYTES && attempt < 3) {
+        attempt++;
+        dom.exportStatusDetail.textContent = `Ajustando compresión para garantizar < 1 MB (ajuste ${attempt})...`;
+        targetBitrate = Math.floor(targetBitrate * 0.6);
+        if (attempt >= 2) {
+          currentFps = 24;
+          totalFrames = Math.ceil(totalDuration * currentFps);
+        }
+        finalBlob = await recordCanvasAnimation(targetBitrate, totalDuration, totalFrames, currentFps);
       }
 
       // Verificar resultado final
       const finalSizeKB = (finalBlob.size / 1024).toFixed(1);
-      const isUnderLimit = finalBlob.size <= CONFIG.MAX_VIDEO_SIZE_BYTES;
+      const isUnderLimit = finalBlob.size <= MAX_BYTES;
 
       // Ocultar modal de progreso
       dom.exportModal.classList.remove('show');
@@ -685,7 +691,7 @@
       // Borrar todos los archivos subidos al exportar el video
       clearUploadedImages();
 
-      showToast(`¡Video MP4 generado con éxito! (${finalSizeKB} KB / < 1.000 KB)`, 'success');
+      showToast(`¡Video MP4 generado en 720x480! (${finalSizeKB} KB / < 1 MB)`, 'success');
     } catch (err) {
       console.error('Error al generar video:', err);
       dom.exportModal.classList.remove('show');
@@ -696,18 +702,18 @@
   }
 
   /**
-   * Graba la animación del canvas usando MediaRecorder con el bitrate especificado.
+   * Graba la animación del canvas usando MediaRecorder con el bitrate y resolución especificados (720x480).
    */
-  function recordCanvasAnimation(bitrate, totalDuration, totalFrames) {
+  function recordCanvasAnimation(bitrate, totalDuration, totalFrames, fps = CONFIG.FPS) {
     return new Promise((resolve, reject) => {
-      // Canvas oculto dedicado a la exportación para máxima calidad y sin interferencia
+      // Canvas oculto dedicado a la exportación con resolución estricta de 720x480 px
       const exportCanvas = document.createElement('canvas');
-      exportCanvas.width = CONFIG.CANVAS_WIDTH;
-      exportCanvas.height = CONFIG.CANVAS_HEIGHT;
+      exportCanvas.width = CONFIG.CANVAS_WIDTH;   // 720 px
+      exportCanvas.height = CONFIG.CANVAS_HEIGHT; // 480 px
       const exportCtx = exportCanvas.getContext('2d');
 
       const mimeType = getSupportedMimeType();
-      const stream = exportCanvas.captureStream(CONFIG.FPS);
+      const stream = exportCanvas.captureStream(fps);
 
       const recorderOptions = {
         videoBitsPerSecond: bitrate
@@ -749,31 +755,38 @@
       recorder.start();
 
       let currentFrame = 0;
-      const frameInterval = 1000 / CONFIG.FPS;
+      const frameDurationMs = 1000 / fps;
+      const recordingStartTime = performance.now();
 
       function renderFrame() {
         if (currentFrame >= totalFrames) {
           dom.exportProgress.style.width = '100%';
           dom.exportProgressText.textContent = '100%';
-          dom.exportStatusDetail.textContent = 'Finalizando codificación del video...';
+          dom.exportStatusDetail.textContent = 'Finalizando codificación del video (720x480)...';
 
           setTimeout(() => {
             recorder.stop();
-          }, 300);
+          }, 200);
           return;
         }
 
-        const currentTime = currentFrame / CONFIG.FPS;
+        const currentTime = currentFrame / fps;
         renderAtTime(currentTime, exportCtx);
 
         // Actualizar barra de progreso
         const progressPct = Math.round((currentFrame / totalFrames) * 100);
         dom.exportProgress.style.width = `${progressPct}%`;
         dom.exportProgressText.textContent = `${progressPct}%`;
-        dom.exportStatusDetail.textContent = `Renderizando cuadro ${currentFrame + 1} de ${totalFrames}...`;
+        dom.exportStatusDetail.textContent = `Renderizando cuadro ${currentFrame + 1} de ${totalFrames} (720x480)...`;
 
         currentFrame++;
-        setTimeout(renderFrame, frameInterval);
+
+        // Compensación de tiempo para sincronización de frames exacta y evitar alargamiento del video
+        const elapsedRealMs = performance.now() - recordingStartTime;
+        const targetNextMs = currentFrame * frameDurationMs;
+        const delay = Math.max(0, targetNextMs - elapsedRealMs);
+
+        setTimeout(renderFrame, delay);
       }
 
       renderFrame();
@@ -804,9 +817,24 @@
   function showResultSection(blob, sizeKB, isUnderLimit) {
     const url = URL.createObjectURL(blob);
     dom.resultVideo.src = url;
-    dom.resultFileSize.innerHTML = `
-      <strong>Tamaño final:</strong> ${sizeKB} KB ${isUnderLimit ? '✅ (Menor a 1.000 KB)' : '⚠️'}
-    `;
+
+    const renderSizeInfo = (w, h) => {
+      dom.resultFileSize.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div><strong>Resolución:</strong> ${w || 720} &times; ${h || 480} px (3:2)</div>
+          <div><strong>Tamaño final:</strong> ${sizeKB} KB ${isUnderLimit ? '✅ (Menor a 1 MB)' : '⚠️'}</div>
+        </div>
+      `;
+    };
+
+    renderSizeInfo(720, 480);
+
+    dom.resultVideo.onloadedmetadata = () => {
+      const vWidth = dom.resultVideo.videoWidth || CONFIG.CANVAS_WIDTH;
+      const vHeight = dom.resultVideo.videoHeight || CONFIG.CANVAS_HEIGHT;
+      renderSizeInfo(vWidth, vHeight);
+    };
+
     dom.resultSection.style.display = 'flex';
 
     dom.btnDownloadAgain.onclick = () => {
